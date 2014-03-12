@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LiteAsync</string>
+    <string name="title">Lite实验室:Async</string>
+    <string name="sub_title">请在Log中查看执行结果</string>
+
+ 
+ <string-array name="async_test_list">
+        <item>AsyncTask Execute</item>
+        <item>AsyncTask Exe Runnable</item>
+        <item>Simple Task</item>
+        <item>Safe Task</item>
+        <item>Task Cancel</item>
+        <item>Ordered Task Executor</item>
+        <item>CyclicBarrier Task Executor</item>
+        <item>Delayed Task</item>
+        <item>Timer Task</item>
+        <item>Cached Task:可减少服务器压力</item>
+    </string-array>
+</resources>
