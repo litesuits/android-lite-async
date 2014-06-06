@@ -1,27 +1,16 @@
 package com.litesuits.android.async;
 
-import java.util.Stack;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.widget.ListView;
-
 import com.litesuits.android.log.Log;
+
+import java.util.Stack;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * see {@link android.os.AsyncTask}
@@ -42,7 +31,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
 		Log.i(LOG_TAG, "CPU ： " + CPU_COUNT);
 	}
 	/*********************************** 基本线程池（无容量限制） *******************************/
-	/** 
+	/**
 	 * 有N处理器，便长期保持N个活跃线程。
 	 */
 	private static final int CORE_POOL_SIZE = CPU_COUNT;
@@ -76,7 +65,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	 * 它大大改善Android自带异步任务框架的处理能力和速度。
 	 * 默认地，它使用LIFO（后进先出）策略来调度线程，可将最新的任务快速执行，当然你自己可以换为FIFO调度策略。
 	 * 这有助于用户当前任务优先完成（比如加载图片时，很容易做到当前屏幕上的图片优先加载）。
-	 * 
+	 *
 	 * @author MaTianyu
 	 * 2014-2-3上午12:46:53
 	 */
@@ -99,31 +88,29 @@ public abstract class AsyncTask<Params, Progress, Result> {
 		}
 		/**
 		 * 一次同时并发的数量，根据处理器数量调节
-		 * 
-		 * <p>cpu count   :  1    2    3    4    8    16    32    64
-		 * <p>base(cpu+1) :  2    3    4    5    9    17    33    65
-		 * <p>once(base*2):  4    6    8    10   18   34    66    130
-		 * 
+		 *
+		 * <p>cpu count   :  1    2    3    4    8    16    32
+		 * <p>once(base*2):  1    2    3    4    8    16    32
+		 *
 		 * <p>一个时间段内最多并发线程个数：
-		 * 单核手机：4
-		 * 双核手机：6
-		 * 四核手机：8
+		 * 双核手机：2
+		 * 四核手机：4
 		 * ...
 		 * 计算公式如下：
 		 */
 		private static int serialOneTime;
 		/**
 		 * 并发最大数量，当投入的任务过多大于此值时，根据Lru规则，将最老的任务移除（将得不到执行）
-		 * <p>cpu count   :  1    2    3    4    8    16    32    64
-		 * <p>base(cpu+3) :  4    5    6    7    11   19    35    67
-		 * <p>max(base*16):  64   80   96   112  176  304   560   1072
+		 * <p>cpu count   :  1    2    3    4    8    16    32
+		 * <p>base(cpu+3) :  4    5    6    7    11   19    35
+		 * <p>max(base*16):  64   80   96   112  176  304   560
 		 */
 		private static int serialMaxCount;
 		private int cpuCount = CPU_COUNT;
 
 		private void reSettings(int cpuCount) {
 			this.cpuCount = cpuCount;
-			serialOneTime = (cpuCount + 1) * 2;
+			serialOneTime = cpuCount;
 			serialMaxCount = (cpuCount + 3) * 16;
 		}
 
@@ -311,14 +298,14 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	/**
 	 * <p>Runs on the UI thread after {@link #doInBackground}. The
 	 * specified result is the value returned by {@link #doInBackground}.</p>
-	 * 
+	 *
 	 * <p>This method won't be invoked if the task was cancelled.</p>
 	 *
 	 * @param result The result of the operation computed by {@link #doInBackground}.
 	 *
 	 * @see #onPreExecute
 	 * @see #doInBackground
-	 * @see #onCancelled(Object) 
+	 * @see #onCancelled(Object)
 	 */
 	@SuppressWarnings({"UnusedDeclaration"})
 	protected void onPostExecute(Result result) {}
@@ -338,14 +325,14 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	/**
 	 * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
 	 * {@link #doInBackground(Object[])} has finished.</p>
-	 * 
+	 *
 	 * <p>The default implementation simply invokes {@link #onCancelled()} and
 	 * ignores the result. If you write your own implementation, do not call
 	 * <code>super.onCancelled(result)</code>.</p>
 	 *
 	 * @param result The result, if any, computed in
 	 *               {@link #doInBackground(Object[])}, can be null
-	 * 
+	 *
 	 * @see #cancel(boolean)
 	 * @see #isCancelled()
 	 */
@@ -358,11 +345,11 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	 * <p>Applications should preferably override {@link #onCancelled(Object)}.
 	 * This method is invoked by the default implementation of
 	 * {@link #onCancelled(Object)}.</p>
-	 * 
+	 *
 	 * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
 	 * {@link #doInBackground(Object[])} has finished.</p>
 	 *
-	 * @see #onCancelled(Object) 
+	 * @see #onCancelled(Object)
 	 * @see #cancel(boolean)
 	 * @see #isCancelled()
 	 */
@@ -391,7 +378,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	 * then the <tt>mayInterruptIfRunning</tt> parameter determines
 	 * whether the thread executing this task should be interrupted in
 	 * an attempt to stop the task.</p>
-	 * 
+	 *
 	 * <p>Calling this method will result in {@link #onCancelled(Object)} being
 	 * invoked on the UI thread after {@link #doInBackground(Object[])}
 	 * returns. Calling this method guarantees that {@link #onPostExecute(Object)}
@@ -454,11 +441,11 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	/**
 	 * Executes the task with the specified parameters. The task returns
 	 * itself (this) so that the caller can keep a reference to it.
-	 * 
+	 *
 	 * <p> Execute a task immediately.
-	 * 
+	 *
 	 * <p> This method must be invoked on the UI thread.
-	 * 
+	 *
 	 * <p> 用于重要、紧急、单独的异步任务，该Task立即得到执行。
 	 * <p> 加载类似瀑布流时产生的大量并发（一定程度允许任务被剔除队列）时请用{@link AsyncTask#executeAllowingLoss(Object...)}
 	 * @param params The parameters of the task.
@@ -488,7 +475,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	/**
 	 * Executes the task with the specified parameters. The task returns
 	 * itself (this) so that the caller can keep a reference to it.
-	 * 
+	 *
 	 * <p>This method is typically used with {@link #mCachedSerialExecutor} to
 	 * allow multiple tasks to run in parallel on a pool of threads managed by
 	 * AsyncTask, however you can also use your own {@link Executor} for custom
