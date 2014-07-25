@@ -3,18 +3,16 @@ android-lite-async
 
 An ameliorative, enhanced AsyncTask for Android. LiteAsync provides SimpleTask, SafeTask, CachedTask, etc, for rapid development. More convenient is, it has a TaskExecutor which can executes ordered, cyclicbarrier, delayed and timer Task.
 
-同学们在日常开发中有没有遇到以下场景：
-
+#同学们在日常开发中有没有遇到以下场景：
 1. 两个原子任务，任务2需要等待任务1完成了才能进行。
 2. 任务3需要等任务1和任务2都完成了才能进行，但是1和2可以并发以节省时间。看起来要写很多代码来调度任务。
 3. 服务器接口压力过大，要被你的调用频度调戏到down机啦！
 4. 系统的异步任务类AsyncTask要用的泛型太多太重啦，并且只能在主线程使用，不爽！
 5. 要么大量并发使手机cpu吃紧卡到爆，要么不能真正（Android系统自带AsyncTask）并发执行。不爽！
 
-  OK，如果你都遇到过，恭喜你，说明你的应用对开发者要求还是挺碉的。
+OK，如果你都遇到过，恭喜你，说明你的应用对开发者要求还是挺碉的。
 那么是不是需要很多的代码才能完成这种和谐并发和任务调度呢？nooooo！有了Crossbow，我们只要一行代码。
-
-  比方说场景2， Task3要等待Task1，Task2执行完才能执行，我们使用LiteAsync可以这样做：
+比方说场景2， Task3要等待Task1，Task2执行完才能执行，我们使用LiteAsync可以这样做：
 
 ```java
   TaskExecutor.newCyclicBarrierExecutor().put(task1).put(task2).start(task3);
