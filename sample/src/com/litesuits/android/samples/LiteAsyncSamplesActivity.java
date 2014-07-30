@@ -1,34 +1,27 @@
 package com.litesuits.android.samples;
 
+
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.Menu;
+import com.litesuits.android.async.*;
+import com.litesuits.android.log.Log;
+import com.litesuits.async.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-import android.os.Bundle;
-import android.os.SystemClock;
-import android.view.Menu;
-
-import com.litesuits.android.async.AsyncTask;
-import com.litesuits.android.async.SafeTask;
-import com.litesuits.android.async.SimpleCachedTask;
-import com.litesuits.android.async.SimpleSafeTask;
-import com.litesuits.android.async.SimpleTask;
-import com.litesuits.android.async.TaskExecutor;
-import com.litesuits.android.log.Log;
-import com.litesuits.android.samples.LiteAsyncSamplesActivity.BaseResponse.Result;
-import com.litesuits.android.samples.LiteAsyncSamplesActivity.User.UserInfo;
-import com.litesuits.async.R;
-
 public class LiteAsyncSamplesActivity extends BaseActivity {
-	Timer timer;
+    Timer timer;
 
-	/**
-	 * 在{@link BaseActivity#onCreate(Bundle)}中设置视图
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    /**
+     * 在{@link BaseActivity#onCreate(Bundle)}中设置视图
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setSubTitile(getString(R.string.sub_title));
 	}
@@ -203,12 +196,12 @@ public class LiteAsyncSamplesActivity extends BaseActivity {
 		for (int i = 0; i < 66; i++) {
 			final int j = i;
 			AsyncTask.executeAllowingLoss(new Runnable() {
-				@Override
-				public void run() {
-					Log.i("AsyncTask Runnable executeAllowingLoss " + j);
-					SystemClock.sleep(500);
-				}
-			});
+                @Override
+                public void run() {
+                    Log.i("AsyncTask Runnable executeAllowingLoss " + j);
+                    SystemClock.sleep(500);
+                }
+            });
 		}
 	}
 
@@ -229,10 +222,10 @@ public class LiteAsyncSamplesActivity extends BaseActivity {
 		// simple safe success
 		SimpleSafeTask<String> sst = new SimpleSafeTask<String>() {
 
-			@Override
-			protected String doInBackground() throws Exception {
-				return "hello";
-			}
+            @Override
+            protected String doInBackgroundSafely() throws Exception {
+                return "hello";
+            }
 
 			@Override
 			protected void onPostExecuteSafely(String result, Exception e)
@@ -240,14 +233,14 @@ public class LiteAsyncSamplesActivity extends BaseActivity {
 				Log.i("SimpleSafeTask onPostExecuteSafely " + result
 						+ " , thread id  : " + Thread.currentThread().getId());
 			}
-		};
+        };
 		sst.execute();
 		Log.i("~~~~~You Will See A Lot of Exception Info ~~~~~~:");
 		// simple safe, error in every step
 		SimpleSafeTask<String> sse = new SimpleSafeTask<String>() {
 
 			@Override
-			protected String doInBackground() throws Exception {
+			protected String doInBackgroundSafely() throws Exception {
 				publishProgress(1, 2, 3);
 				Log.i("SimpleSafeTask : doInBackground");
 				String s = null;
@@ -432,8 +425,8 @@ public class LiteAsyncSamplesActivity extends BaseActivity {
 	private User mockhttpGetUserInfo() {
 		User user = new User();
 		user.api = "com.litesuits.get.user";
-		user.result = new Result(200, "OK");
-		user.data = new UserInfo("Lucy", 28);
+		user.result = new BaseResponse.Result(200, "OK");
+		user.data = new User.UserInfo("Lucy", 28);
 		return user;
 	}
 
@@ -442,57 +435,57 @@ public class LiteAsyncSamplesActivity extends BaseActivity {
 		private UserInfo data;
 
 		public static class UserInfo implements Serializable {
-			private String name;
-			private int age;
-			public ArrayList<String> girl_friends;
+            private String            name;
+            private int               age;
+            public  ArrayList<String> girl_friends;
 
-			public UserInfo(String name, int age) {
-				this.name = name;
-				this.age = age;
-			}
+            public UserInfo(String name, int age) {
+                this.name = name;
+                this.age = age;
+            }
 
-			@Override
-			public String toString() {
-				return "UserInfo [name=" + name + ", age=" + age
-						+ ", girl_friends=" + girl_friends + "]";
-			}
+            @Override
+            public String toString() {
+                return "UserInfo [name=" + name + ", age=" + age
+                        + ", girl_friends=" + girl_friends + "]";
+            }
 
-		}
+        }
 
-		@Override
-		public String toString() {
-			return super.toString() + " User [data=" + data + "]";
-		}
+        @Override
+        public String toString() {
+            return super.toString() + " User [data=" + data + "]";
+        }
 
-	}
+    }
 
-	public static abstract class BaseResponse implements Serializable {
-		// private static final long serialVersionUID = 448947882360115789L;
-		public String api;
-		private String v;
-		public Result result;
+    public static abstract class BaseResponse implements Serializable {
+        // private static final long serialVersionUID = 448947882360115789L;
+        public  String api;
+        private String v;
+        public  Result result;
 
-		public static class Result implements Serializable {
-			public int code;
-			public String message;
+        public static class Result implements Serializable {
+            public int    code;
+            public String message;
 
-			public Result(int code, String message) {
-				this.code = code;
-				this.message = message;
-			}
+            public Result(int code, String message) {
+                this.code = code;
+                this.message = message;
+            }
 
-			@Override
-			public String toString() {
-				return "Result [code=" + code + ", message=" + message + "]";
-			}
+            @Override
+            public String toString() {
+                return "Result [code=" + code + ", message=" + message + "]";
+            }
 
-		}
+        }
 
-		@Override
-		public String toString() {
-			return "BaseResponse [api=" + api + ", v=" + v + ", result="
-					+ result + "]";
-		}
-	}
+        @Override
+        public String toString() {
+            return "BaseResponse [api=" + api + ", v=" + v + ", result="
+                    + result + "]";
+        }
+    }
 
 }

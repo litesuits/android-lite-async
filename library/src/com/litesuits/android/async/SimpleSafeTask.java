@@ -13,7 +13,7 @@ public abstract class SimpleSafeTask<T> extends SafeTask<Object, Object, T> {
     //protected void onPreExecuteSafely() throws Exception {}
 
     @Override
-    protected T doInBackgroundSafely(Object... params) throws Exception {
+    protected final T doInBackgroundSafely(Object... params) throws Exception {
         return doInBackgroundSafely();
     }
 
