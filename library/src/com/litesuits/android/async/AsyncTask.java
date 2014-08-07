@@ -52,14 +52,14 @@ public abstract class AsyncTask<Params, Progress, Result> {
 	 * 线程完成任务后保持{@link #KEEP_ALIVE}秒销毁，这段时间内可重用以应付短时间内较大量并发，提升性能。
 	 * 它实际控制并执行线程任务。
 	 */
-	protected static final ThreadPoolExecutor mCachedSerialExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
+	public static final ThreadPoolExecutor mCachedSerialExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
 			MAXIMUM_POOL_SIZE, KEEP_ALIVE, TimeUnit.SECONDS, sPoolWorkQueue, sThreadFactory);
 
 	/*********************************** 线程并发控制器 *******************************/
 	/**
 	 * 并发量控制: 根据cpu能力控制一段时间内并发数量，并发过量大时采用Lru方式移除旧的异步任务，默认采用LIFO策略调度线程运作，开发者可选调度策略有LIFO、FIFO。
 	 */
-	protected static final Executor mLruSerialExecutor = new SmartSerialExecutor();
+    public static final Executor mLruSerialExecutor = new SmartSerialExecutor();
 
 	/**
 	 * 它大大改善Android自带异步任务框架的处理能力和速度。

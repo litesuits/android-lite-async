@@ -3,7 +3,7 @@
 
     <string name="app_name">LiteAsync</string>
     <string name="title">LiteLab:Async</string>
-    <string name="sub_title">See The Result in The Log </string>
+    <string name="sub_title">Result in The Log </string>
 
     <string-array name="async_test_list">
         <item>AsyncTask Execute</item>

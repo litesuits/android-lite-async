@@ -3,7 +3,7 @@
 
     <string name="app_name">LiteAsync</string>
     <string name="title">Lite实验室:Async</string>
-    <string name="sub_title">请在Log中查看执行结果</string>
+    <string name="sub_title">Log中查看执行结果</string>
 
  
  <string-array name="async_test_list">
