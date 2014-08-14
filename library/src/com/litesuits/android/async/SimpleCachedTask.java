@@ -1,9 +1,9 @@
 package com.litesuits.android.async;
 
+import android.content.Context;
+
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
-
-import android.content.Context;
 
 /**
  * 简单的异步任务，仅仅指定返回结果的类型，不可输入参数
@@ -17,9 +17,9 @@ public abstract class SimpleCachedTask<T extends Serializable> extends CachedTas
 	}
 
 	@Override
-	protected T doConnectNetwork(Object... params) {
+	protected T doConnectNetwork(Object... params) throws Exception{
 		return doConnectNetwork();
 	}
 
-	protected abstract T doConnectNetwork();
+	protected abstract T doConnectNetwork() throws Exception;
 }

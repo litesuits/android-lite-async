@@ -1,31 +1,24 @@
 package com.litesuits.android.async;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import android.content.Context;
+import com.litesuits.android.log.Log;
+
+import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import android.content.Context;
-
-import com.litesuits.android.log.Log;
 
 /**
  * <p> Cached AsyncTask 缓存异步任务
  * <p> 它主要用于获取网络数据，给它一个缓存时间，只要未超时，它将先从本地获取，仅当超时或本地获取失败时才去真正联网完成。
  * <b>每个Task都必须有唯一标示：key，</b>它唯一标示一个缓存任务，不同的任务绝对不能一样，否则会混淆超时时间。
- * <b>{@link CachedTask#Result} 需要序列化</b>否则不能或者不能完整的读取缓存。
+ * <b>{@link #CachedTask#Result} 需要序列化</b>否则不能或者不能完整的读取缓存。
  * @author MaTianyu
  *         2014-2-23下午8:57:55
  */
 public abstract class CachedTask<Params, Progress, Result extends Serializable>
-		extends AsyncTask<Params, Progress, Result> {
+		extends SafeTask<Params, Progress, Result> {
 	private static final String TAG = CachedTask.class.getSimpleName();
-	private static final String DEFAULT_PATH = "/cachedtask_private";
+	private static final String DEFAULT_PATH = "/cachedtask";
 	private long expiredTime = 0;
 	private static String cachePath;
 	private String key;
@@ -64,42 +57,42 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 		else expiredTime = cacheTime;
 	}
 
-	protected abstract Result doConnectNetwork(Params... params);
+	protected abstract Result doConnectNetwork(Params... params) throws Exception;
 
-	@Override
-	protected final Result doInBackground(Params... params) {
-		Result res = null;
-		try {
-			Long time = cachedTimeMap.get(key);
-			long lastTime = time == null ? 0 : time;
-			if (System.currentTimeMillis() - lastTime >= expiredTime) {
-				res = doConnectNetwork(params);
-				if (res != null) {
-					if (Log.isPrint) Log.d(TAG, "doConnectNetwork: sucess");
-					cachedTimeMap.put(key, System.currentTimeMillis());
-					saveResultToCache(res);
-				} else {
-					if (Log.isPrint) Log.d(TAG, "doConnectNetwork: false");
-					res = getResultFromCache();
-				}
-			} else {
-				res = getResultFromCache();
-				if (res == null) {
-					res = doConnectNetwork(params);
-					if (res != null) {
-						if (Log.isPrint) Log.d(TAG, "doConnectNetwork: sucess");
-						cachedTimeMap.put(key, System.currentTimeMillis());
-						saveResultToCache(res);
-					} else {
-						if (Log.isPrint) Log.d(TAG, "doConnectNetwork: false");
-					}
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return res;
-	}
+    @Override
+    protected final Result doInBackgroundSafely(Params... params) throws Exception {
+        Result res = null;
+        try {
+            Long time = cachedTimeMap.get(key);
+            long lastTime = time == null ? 0 : time;
+            if (System.currentTimeMillis() - lastTime >= expiredTime) {
+                res = doConnectNetwork(params);
+                if (res != null) {
+                    if (Log.isPrint) Log.d(TAG, "doConnectNetwork: sucess");
+                    cachedTimeMap.put(key, System.currentTimeMillis());
+                    saveResultToCache(res);
+                } else {
+                    if (Log.isPrint) Log.d(TAG, "doConnectNetwork: false");
+                    res = getResultFromCache();
+                }
+            } else {
+                res = getResultFromCache();
+                if (res == null) {
+                    res = doConnectNetwork(params);
+                    if (res != null) {
+                        if (Log.isPrint) Log.d(TAG, "doConnectNetwork: sucess");
+                        cachedTimeMap.put(key, System.currentTimeMillis());
+                        saveResultToCache(res);
+                    } else {
+                        if (Log.isPrint) Log.d(TAG, "doConnectNetwork: false");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
 
 	@SuppressWarnings("unchecked")
 	private Result getResultFromCache() {
@@ -109,7 +102,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 			Object obj = ois.readObject();
 
 			if (obj != null) {
-				if (Log.isPrint) Log.d(TAG, "getResultFromCache: sucess");
+				if (Log.isPrint) Log.i(TAG, "CacehTask FromCache: "+obj);
 				return (Result) obj;
 			}
 		} catch (Exception e) {
@@ -121,7 +114,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 				e.printStackTrace();
 			}
 		}
-		if (Log.isPrint) Log.d(TAG, "getResultFromCache: fail ");
+		if (Log.isPrint) Log.e(TAG, "getResultFromCache: fail ");
 		return null;
 	}
 
@@ -132,7 +125,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 			if (!dir.exists()) dir.mkdirs();
 			oos = new ObjectOutputStream(new FileOutputStream(new File(dir, key)));
 			oos.writeObject(res);
-			if (Log.isPrint) Log.d(TAG, "saveResultToCache: success");
+			if (Log.isPrint) Log.i(TAG, "CacehTask FromCache: "+res);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -143,7 +136,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 				e.printStackTrace();
 			}
 		}
-		if (Log.isPrint) Log.d(TAG, "saveResultToCache: fail");
+		if (Log.isPrint) Log.e(TAG, "saveResultToCache: fail");
 		return false;
 	}
 }
