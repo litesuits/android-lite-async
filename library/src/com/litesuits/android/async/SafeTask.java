@@ -44,8 +44,6 @@ public abstract class SafeTask<Params, Progress, Result> extends AsyncTask<Param
         }
     }
 
-    ;
-
     @Override
     protected final void onPostExecute(Result result) {
         try {

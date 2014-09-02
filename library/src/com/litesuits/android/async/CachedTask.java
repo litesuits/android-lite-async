@@ -41,8 +41,11 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 
 		}
 	}
+    public static void removeKeyValue(String key) {
+        cachedTimeMap.remove(key);
+    }
 
-	/**
+    /**
 	 * @param context app context
 	 * @param key identify label, each single cachedtask should not be the same.
 	 * @param cacheTime expired time
@@ -51,7 +54,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 	public CachedTask(Context context, String key, long cacheTime, TimeUnit unit) {
 		if (context == null) throw new RuntimeException("CachedTask Initialized Must has Context");
 		cachePath = context.getFilesDir().getAbsolutePath() + DEFAULT_PATH;
-		if (key == null) throw new RuntimeException("CachedTask Must Has Key for Search ");
+        if (key == null) throw new RuntimeException("CachedTask Must Has Key for Search ");
 		this.key = key;
 		if (unit != null) expiredTime = unit.toMillis(cacheTime);
 		else expiredTime = cacheTime;
@@ -102,7 +105,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 			Object obj = ois.readObject();
 
 			if (obj != null) {
-				if (Log.isPrint) Log.i(TAG, "CacehTask FromCache: "+obj);
+				if (Log.isPrint) Log.i(TAG, key+ " read from cache: "+obj);
 				return (Result) obj;
 			}
 		} catch (Exception e) {
@@ -114,7 +117,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 				e.printStackTrace();
 			}
 		}
-		if (Log.isPrint) Log.e(TAG, "getResultFromCache: fail ");
+		if (Log.isPrint) Log.e(TAG, "read ResultFromCache: fail ");
 		return null;
 	}
 
@@ -125,7 +128,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 			if (!dir.exists()) dir.mkdirs();
 			oos = new ObjectOutputStream(new FileOutputStream(new File(dir, key)));
 			oos.writeObject(res);
-			if (Log.isPrint) Log.i(TAG, "CacehTask FromCache: "+res);
+			if (Log.isPrint) Log.i(TAG, key +"  saveto cache: "+res);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -136,7 +139,7 @@ public abstract class CachedTask<Params, Progress, Result extends Serializable>
 				e.printStackTrace();
 			}
 		}
-		if (Log.isPrint) Log.e(TAG, "saveResultToCache: fail");
+		if (Log.isPrint) Log.e(TAG, "save Result To Cache: fail");
 		return false;
 	}
 }
