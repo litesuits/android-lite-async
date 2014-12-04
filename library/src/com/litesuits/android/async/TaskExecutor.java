@@ -139,9 +139,15 @@ public class TaskExecutor {
 
         @SuppressWarnings("unchecked")
         private void executeNext() {
-            AsyncTask<?, ?, ?> next = taskList.pollFirst();
-            if (next != null) next.execute();
-            else isRunning = false;
+            AsyncTask<?, ?, ?> next = null;
+            if (taskList.size() > 0) {
+                next = taskList.removeFirst();
+            }
+            if (next != null) {
+                next.execute();
+            } else {
+                isRunning = false;
+            }
         }
     }
 
