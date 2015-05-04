@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.widget.ListView;
-import com.litesuits.android.log.Log;
 
 import java.util.Stack;
 import java.util.concurrent.*;

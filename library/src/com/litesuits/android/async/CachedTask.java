@@ -1,7 +1,6 @@
 package com.litesuits.android.async;
 
 import android.content.Context;
-import com.litesuits.android.log.Log;
 
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
