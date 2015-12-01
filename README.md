@@ -49,7 +49,10 @@ OK，如果你都遇到过，恭喜你，说明你的应用对开发者要求还
 
 我的开源站点 ：[http://litesuits.com](http://litesuits.com/)
 
-点击加入QQ群: [47357508](http://jq.qq.com/?_wv=1027&k=Z7l0Av)
+点击加入QQ群: 
+[42960650](http://jq.qq.com/?_wv=1027&k=cxjcDa)
+
+[47357508](http://jq.qq.com/?_wv=1027&k=Z7l0Av)
 
 我的论坛帖子
 -----

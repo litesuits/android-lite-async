@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.Menu;
 import com.litesuits.android.async.*;
-import com.litesuits.android.log.Log;
 import com.litesuits.async.R;
 
 import java.io.Serializable;
