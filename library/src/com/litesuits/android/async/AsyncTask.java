@@ -86,10 +86,10 @@ public abstract class AsyncTask<Params, Progress, Result> {
 			FIFO;
 		}
 		/**
-		 * 一次同时并发的数量，根据处理器数量调节
+		 * 一次同时并发的线程数量，根据处理器数量调节
 		 *
-		 * <p>cpu count   :  1    2    3    4    8    16    32
-		 * <p>once(base*2):  1    2    3    4    8    16    32
+		 * <p>cpu count (base)  :  1    2    3    4    8    16    32
+		 * <p>once exe (base*2) :  1    2    3    4    8    16    32
 		 *
 		 * <p>一个时间段内最多并发线程个数：
 		 * 双核手机：2
@@ -99,7 +99,7 @@ public abstract class AsyncTask<Params, Progress, Result> {
 		 */
 		private static int serialOneTime;
 		/**
-		 * 并发最大数量，当投入的任务过多大于此值时，根据Lru规则，将最老的任务移除（将得不到执行）
+		 * 最大排队任务数量，当投入的任务过多大于此值时，根据Lru规则，将最老的任务移除（将得不到执行）
 		 * <p>cpu count   :  1    2    3    4    8    16    32
 		 * <p>base(cpu+3) :  4    5    6    7    11   19    35
 		 * <p>max(base*16):  64   80   96   112  176  304   560
